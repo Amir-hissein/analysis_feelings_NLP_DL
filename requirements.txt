@@ -1,0 +1,14 @@
+# ─────────────────────────────────────────────────────────
+# PHASE 1-2 : Exploration & manipulation des données
+# On commence LÉGER. On ajoutera les libs lourdes (torch,
+# transformers, fastapi...) au fur et à mesure des phases.
+# ─────────────────────────────────────────────────────────
+pandas==2.2.3
+numpy==2.1.3
+matplotlib==3.9.2
+seaborn==0.13.2
+plotly==5.24.1
+
+# Environnement de notebooks pour l'EDA
+jupyterlab==4.3.0
+ipykernel==6.29.5

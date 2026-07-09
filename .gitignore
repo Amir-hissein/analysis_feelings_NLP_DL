@@ -1,0 +1,27 @@
+# Environnement virtuel
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Données (souvent trop lourdes / privées pour Git)
+data/raw/*
+data/processed/*
+data/external/*
+!data/**/.gitkeep
+
+# Modèles entraînés (lourds)
+models/*
+!models/.gitkeep
+
+# Système
+.DS_Store
+.env
+
+# IDE
+.vscode/
+.idea/
