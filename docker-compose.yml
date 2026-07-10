@@ -1,0 +1,22 @@
+# ─────────────────────────────────────────────────────────────
+# ORCHESTRATION : lance l'API + le frontend ensemble (Phase 13)
+# Usage :  docker compose up --build
+#          puis ouvrir http://localhost:8080
+# ─────────────────────────────────────────────────────────────
+services:
+  # Le service API (FastAPI + modèle)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"   # port_hôte:port_conteneur
+
+  # Le service frontend (React compilé, servi par nginx)
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api           # démarre après l'API

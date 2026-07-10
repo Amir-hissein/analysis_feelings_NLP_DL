@@ -1,0 +1,24 @@
+# ─────────────────────────────────────────────────────────────
+# IMAGE DE L'API (FastAPI + modèle baseline) — Phase 13
+# ─────────────────────────────────────────────────────────────
+
+# On part d'une image Python légère ("slim" = sans le superflu).
+FROM python:3.13-slim
+
+# Dossier de travail dans le conteneur.
+WORKDIR /app
+
+# 1. Installer les dépendances D'ABORD (couche Docker mise en cache :
+#    tant que requirements ne change pas, cette étape n'est pas refaite).
+COPY requirements-api.txt .
+RUN pip install --no-cache-dir -r requirements-api.txt \
+    && python -m spacy download en_core_web_sm
+
+# 2. Copier le code et les 2 petits modèles nécessaires à l'inférence.
+COPY src/ ./src/
+COPY models/tfidf_vectorizer.joblib models/logreg_model.joblib ./models/
+
+# 3. Documenter le port et lancer le serveur.
+#    --host 0.0.0.0 : écoute sur toutes les interfaces (indispensable en conteneur).
+EXPOSE 8000
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

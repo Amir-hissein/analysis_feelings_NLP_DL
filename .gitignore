@@ -14,9 +14,13 @@ data/processed/*
 data/external/*
 !data/**/.gitkeep
 
-# Modèles entraînés (lourds)
+# Modèles entraînés (lourds) — exclus par défaut
 models/*
 !models/.gitkeep
+# EXCEPTIONS : les 2 petits artefacts de la baseline (222 Ko) sont versionnés
+# car nécessaires au déploiement Docker + à la CI (image API self-contained).
+!models/tfidf_vectorizer.joblib
+!models/logreg_model.joblib
 
 # Système
 .DS_Store

@@ -14,6 +14,7 @@ Lancement du serveur :
 Puis ouvrir la doc interactive : http://127.0.0.1:8000/docs
 """
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from src.inference.predict import predict_sentiment
@@ -25,6 +26,20 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# ── CORS : autoriser le frontend React à appeler l'API ───────────────
+# Sans ça, le navigateur BLOQUE les appels de localhost:5173 (React) vers
+# localhost:8000 (API) pour raisons de sécurité. On autorise explicitement
+# l'origine du frontend de développement (Vite).
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173", "http://127.0.0.1:5173",  # frontend en dev (Vite)
+        "http://localhost:8080", "http://127.0.0.1:8080",  # frontend en Docker (nginx)
+    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # ── Schémas d'entrée/sortie (Pydantic = validation automatique) ──────
 class ReviewIn(BaseModel):
@@ -34,11 +49,19 @@ class ReviewIn(BaseModel):
                       examples=["This movie was absolutely fantastic!"])
 
 
+class Contribution(BaseModel):
+    """Un mot et son influence sur la décision (+ = positif, - = négatif)."""
+    mot: str
+    contribution: float
+
+
 class PredictionOut(BaseModel):
     """Ce que l'API RENVOIE. FastAPI documente ce format tout seul."""
     label: str = Field(description="'positif' ou 'négatif'")
     proba_positif: float = Field(description="Probabilité que l'avis soit positif (0 à 1)")
     confiance: float = Field(description="Confiance du modèle dans sa décision (0.5 à 1)")
+    contributions: list[Contribution] = Field(
+        default=[], description="Mots les plus décisifs et leur contribution +/-")
 
 
 # ── Routes ───────────────────────────────────────────────────────────

@@ -1,0 +1,236 @@
+/* Interface de l'analyse de sentiments (Phase 12) */
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+header h1 {
+  font-size: 40px;
+  margin: 0 0 8px;
+}
+
+.sous-titre {
+  color: var(--text);
+  font-size: 16px;
+}
+
+/* Zone de saisie de l'avis */
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-family: var(--sans);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-h);
+  resize: vertical;
+}
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Bouton Analyser */
+button {
+  padding: 12px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+button:hover:not(:disabled) { opacity: 0.88; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Message d'erreur */
+.erreur {
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+  font-size: 15px;
+}
+
+/* Carte de résultat (vert si positif, rouge si négatif) */
+.resultat {
+  padding: 24px;
+  border-radius: 14px;
+  border: 2px solid;
+}
+.resultat.positif {
+  background: rgba(22, 163, 74, 0.10);
+  border-color: rgba(22, 163, 74, 0.5);
+}
+.resultat.negatif {
+  background: rgba(220, 38, 38, 0.10);
+  border-color: rgba(220, 38, 38, 0.5);
+}
+
+.verdict {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.positif .verdict { color: #16a34a; }
+.negatif .verdict { color: #dc2626; }
+
+.confiance-label {
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+/* Barre de confiance */
+.barre {
+  height: 12px;
+  width: 100%;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.barre-remplie {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+.positif .barre-remplie { background: #16a34a; }
+.negatif .barre-remplie { background: #dc2626; }
+
+/* ── Graphique des contributions (barres divergentes) ── */
+.contribs {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+.contribs h3 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  color: var(--text-h);
+  text-align: center;
+}
+.contribs-aide {
+  font-size: 12px;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+/* Une ligne = [mot] [piste divergente] [valeur] */
+.c-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+.c-mot {
+  width: 92px;
+  flex-shrink: 0;
+  font-size: 13px;
+  text-align: right;
+  color: var(--text-h);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.c-val {
+  width: 46px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.c-val.pos { color: #16a34a; }
+.c-val.neg { color: #dc2626; }
+
+/* La piste : deux moitiés autour d'une ligne centrale */
+.c-track {
+  flex: 1;
+  display: flex;
+  height: 16px;
+}
+.c-half { width: 50%; display: flex; align-items: center; }
+/* La bordure entre les deux moitiés = la ligne du zéro, pile au centre */
+.c-left {
+  justify-content: flex-end;    /* barre négative : colle au centre, va vers la gauche */
+  border-right: 2px solid var(--border);
+}
+.c-right { justify-content: flex-start; } /* barre positive : colle au centre, va vers la droite */
+
+.c-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+.c-bar.c-pos { background: #16a34a; }
+.c-bar.c-neg { background: #dc2626; }
+
+/* ── Histogramme de session ── */
+.histo {
+  margin-top: 8px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  text-align: left;
+}
+.histo h3 {
+  margin: 0 0 14px;
+  font-size: 16px;
+  color: var(--text-h);
+  text-align: center;
+}
+.h-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.h-label {
+  width: 70px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--text-h);
+}
+.h-track {
+  flex: 1;
+  height: 20px;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.h-bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}
+.h-compte {
+  width: 28px;
+  flex-shrink: 0;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-h);
+}
+.histo-stats {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text);
+}
+
+footer {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text);
+}

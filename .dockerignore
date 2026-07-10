@@ -1,0 +1,15 @@
+# Ne PAS envoyer ces fichiers au contexte de build (plus rapide + image légère)
+venv/
+.venv/
+data/
+notebooks/
+reports/
+frontend/
+.git/
+**/__pycache__/
+*.pyc
+
+# Modèles lourds inutiles à l'API baseline (on garde les 2 .joblib)
+models/distilbert_sentiment/
+models/lstm_model.pt
+models/lstm_vocab.json

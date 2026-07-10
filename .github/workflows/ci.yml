@@ -1,0 +1,44 @@
+# ─────────────────────────────────────────────────────────────
+# INTÉGRATION CONTINUE (CI) — Phase 13
+# Se déclenche à chaque push/PR sur main : construit les images
+# Docker et vérifie que l'API répond réellement (smoke test).
+# ─────────────────────────────────────────────────────────────
+name: CI
+
+# QUAND lancer ce workflow.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest   # GitHub fournit une machine Linux propre
+    steps:
+      # 1. Récupérer le code du dépôt.
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      # 2. Construire l'image de l'API (vérifie le Dockerfile + les dépendances).
+      - name: Construire l'image API
+        run: docker build -f Dockerfile.api -t sentiment-api:ci .
+
+      # 3. SMOKE TEST : lancer le conteneur et vérifier qu'il prédit vraiment.
+      - name: Tester l'API (smoke test)
+        run: |
+          docker run -d -p 8000:8000 --name api sentiment-api:ci
+          # Attendre que l'API réponde (max ~60s).
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8000/health && break
+            sleep 2
+          done
+          # Vérifier qu'une prédiction fonctionne de bout en bout.
+          curl -sf -X POST http://localhost:8000/predict \
+            -H "Content-Type: application/json" \
+            -d '{"text": "This movie was great!"}' | grep -q '"label"'
+          echo "✅ L'API répond et prédit correctement."
+
+      # 4. Construire l'image du frontend (vérifie le build React + nginx).
+      - name: Construire l'image frontend
+        run: docker build -t sentiment-frontend:ci ./frontend

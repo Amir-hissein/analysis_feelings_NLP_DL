@@ -22,8 +22,8 @@
 | 9 | Transformers (DistilBERT/BERT) | ✅ Terminée |
 | 10 | Sauvegarde du modèle / inférence | ✅ Terminée |
 | 11 | API FastAPI | ✅ Terminée |
-| 12 | Frontend React | ⬜ À venir |
-| 13 | Déploiement (Docker/CI) | ⬜ À venir |
+| 12 | Frontend React | ✅ Terminée |
+| 13 | Déploiement (Docker) | ✅ Terminée |
 | 14 | Améliorations | ⬜ À venir |
 
 ---
@@ -329,5 +329,74 @@ Accuracy TEST : **84,6 %** (baseline logistique : 88,6 %). Val acc encore en hau
 - **Lancer le serveur** : `uvicorn src.api.main:app --reload`.
 
 **Livrable :** `src/api/main.py`. ✅
+
+---
+
+## ✅ Phase 12 — Frontend React
+
+**Objectif :** une interface web où l'utilisateur tape un avis et voit le sentiment s'afficher.
+
+**Ce que j'ai fait :**
+- Créé un projet **Vite + React** dans `frontend/`.
+- Écrit `frontend/src/App.jsx` : champ de texte, bouton Analyser, appel `fetch` vers l'API, affichage vert/rouge + barre de confiance.
+- Style dans `frontend/src/App.css` (+ `index.css` simplifié).
+- Ajouté le **CORS** dans `src/api/main.py` (autorise `localhost:5173`).
+- Testé de bout en bout : CORS OK, API répond, page servie.
+
+**Ce que j'ai appris :**
+- **Composant React** = fonction JS qui retourne du **JSX** (du HTML dans du JS).
+- **`useState`** = la mémoire du composant ; `setXxx()` redessine l'UI automatiquement. Utilisé pour `texte`, `resultat`, `chargement`, `erreur`.
+- **`fetch` + `async/await`** : appel HTTP asynchrone vers l'API, `await res.json()` pour lire la réponse.
+- **Affichage conditionnel** (`{resultat && ...}`) et classes dynamiques (`className={estPositif ? 'positif' : 'negatif'}`).
+- ⚠️ **CORS** : le navigateur bloque par défaut les appels frontend→API entre origines différentes. Il faut l'autoriser côté serveur (`CORSMiddleware` FastAPI).
+- **Vite** : outil moderne de dev React (serveur `npm run dev` sur le port 5173, rechargement à chaud).
+
+**Lancer l'appli** (2 terminaux) :
+1. API : `uvicorn src.api.main:app --reload`
+2. Front : `cd frontend && npm run dev` → http://localhost:5173
+
+**Livrables :** `frontend/` (projet React), CORS dans `src/api/main.py`. ✅
+
+### Bonus Phase 12 — Graphique des contributions (dataviz)
+- **API** : `predict_sentiment()` renvoie maintenant `contributions` = pour chaque mot présent, `score TF-IDF × poids appris` (exploite l'**interprétabilité** de la régression logistique). Schéma Pydantic `Contribution` ajouté.
+- **Frontend** : `frontend/src/Contributions.jsx` = graphe à **barres divergentes** (vert = pousse positif ▶, rouge = négatif ◀, longueur = importance). Montre POURQUOI le modèle décide.
+- **Dataviz** : paire divergente vert/rouge + encodages secondaires (position gauche/droite, signe, valeur) → lisible même en cas de daltonisme ; ligne du zéro au centre ; thème clair/sombre.
+- Vérifié : "waste time" (bigramme) capté à −2.16 ; "brilliant" +2.08. ✅
+
+### Bonus Phase 12 — Histogramme de session
+- `frontend/src/SessionHistogram.jsx` : compte positifs/négatifs + confiance moyenne sur tous les avis testés dans la session.
+- Concept React : historique stocké dans `useState` ; chaque analyse l'enrichit → l'UI se redessine automatiquement.
+
+---
+
+## ✅ Phase 13 — Déploiement Docker
+
+**Objectif :** empaqueter l'appli (API + frontend) dans des conteneurs pour qu'elle tourne à l'identique partout.
+
+**Ce que j'ai fait :**
+- `requirements-api.txt` : dépendances **minimales** de l'API (pas de torch/transformers → image plus légère).
+- `Dockerfile.api` : image API (python:3.13-slim + spaCy + modèles .joblib).
+- `frontend/Dockerfile` : **build multi-étapes** (Node compile React → nginx sert le statique).
+- `.dockerignore` (racine + frontend) : exclut venv/data/gros modèles/node_modules.
+- `docker-compose.yml` : orchestre API (8000) + frontend (8080).
+- CORS : ajout de `localhost:8080` (origine du frontend Docker).
+- Buildé et lancé : les 2 conteneurs tournent, testés OK.
+
+**Résultats :** image API 952 Mo, frontend 92 Mo. Appli complète sur http://localhost:8080.
+
+**Ce que j'ai appris :**
+- **Image** (recette figée via Dockerfile) vs **conteneur** (image en cours d'exécution). « Marche partout ».
+- **Couches Docker en cache** : copier `requirements` AVANT le code → l'install n'est pas refaite si seul le code change.
+- **Build multi-étapes** : compiler avec Node, ne garder que le résultat servi par nginx → image finale minuscule (pas de node_modules).
+- **`--host 0.0.0.0`** obligatoire dans un conteneur (écouter toutes les interfaces).
+- **docker-compose** : lancer/relier plusieurs services (`up --build`, `down`, `ps`).
+- **Optimisation prod** : image d'inférence sans les libs d'entraînement (torch/transformers).
+- `.dockerignore` : indispensable pour ne pas envoyer venv/data (300 Mo+) au contexte de build.
+
+**Lancer en prod :** `docker compose up --build` → http://localhost:8080
+
+**Livrables :** `Dockerfile.api`, `frontend/Dockerfile`, `docker-compose.yml`, `requirements-api.txt`, `.dockerignore`. ✅
+
+---
 
 ---

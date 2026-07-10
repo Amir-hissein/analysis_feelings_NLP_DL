@@ -1,0 +1,8 @@
+# Dépendances MINIMALES pour faire tourner l'API en production.
+# (Pas de torch/transformers : ils servaient à entraîner LSTM/BERT, pas à
+#  l'inférence de la baseline TF-IDF + Régression Logistique.)
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
+scikit-learn==1.9.0
+spacy==3.8.14
