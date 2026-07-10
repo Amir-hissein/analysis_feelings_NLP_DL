@@ -12,3 +12,28 @@ plotly==5.24.1
 # Environnement de notebooks pour l'EDA
 jupyterlab==4.3.0
 ipykernel==6.29.5
+
+# ─────────────────────────────────────────────────────────
+# PHASE 4 : Prétraitement NLP (tokenisation, stopwords, lemmatisation)
+# spaCy = pipeline NLP moderne. Nécessite aussi le modèle anglais
+# 'en_core_web_sm' (téléchargé à part, voir README).
+# ─────────────────────────────────────────────────────────
+spacy==3.8.14
+
+# ─────────────────────────────────────────────────────────
+# PHASE 5-6 : Feature Engineering (TF-IDF) + ML classique
+# scikit-learn amène aussi scipy (matrices creuses) et joblib
+# (sauvegarde des modèles). La référence du ML classique.
+# ─────────────────────────────────────────────────────────
+scikit-learn==1.9.0
+
+# ─────────────────────────────────────────────────────────
+# PHASE 8 : Deep Learning (réseau LSTM). PyTorch utilise
+# automatiquement le GPU Apple Silicon (MPS) si disponible.
+# ─────────────────────────────────────────────────────────
+torch==2.13.0
+
+# ─────────────────────────────────────────────────────────
+# PHASE 9 : Transformers (DistilBERT pré-entraîné, Hugging Face)
+# ─────────────────────────────────────────────────────────
+transformers==4.46.3
