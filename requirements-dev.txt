@@ -1,0 +1,4 @@
+# Development & CI tools (linting, tests). Installs the API deps too.
+-r requirements-api.txt
+ruff==0.15.21
+pytest==9.1.1

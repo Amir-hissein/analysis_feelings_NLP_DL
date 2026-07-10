@@ -1,44 +1,72 @@
-# ─────────────────────────────────────────────────────────────
-# INTÉGRATION CONTINUE (CI) — Phase 13
-# Se déclenche à chaque push/PR sur main : construit les images
-# Docker et vérifie que l'API répond réellement (smoke test).
-# ─────────────────────────────────────────────────────────────
 name: CI
 
-# QUAND lancer ce workflow.
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
 
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest   # GitHub fournit une machine Linux propre
+  backend:
+    name: Backend · lint & test
+    runs-on: ubuntu-latest
     steps:
-      # 1. Récupérer le code du dépôt.
-      - name: Récupérer le code
-        uses: actions/checkout@v4
-
-      # 2. Construire l'image de l'API (vérifie le Dockerfile + les dépendances).
-      - name: Construire l'image API
-        run: docker build -f Dockerfile.api -t sentiment-api:ci .
-
-      # 3. SMOKE TEST : lancer le conteneur et vérifier qu'il prédit vraiment.
-      - name: Tester l'API (smoke test)
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install dependencies
         run: |
-          docker run -d -p 8000:8000 --name api sentiment-api:ci
-          # Attendre que l'API réponde (max ~60s).
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          python -m spacy download en_core_web_sm
+      - name: Lint (ruff)
+        run: ruff check src tests
+      - name: Test (pytest)
+        run: pytest -q
+
+  frontend:
+    name: Frontend · lint & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint (oxlint)
+        run: npm run lint
+      - name: Build
+        run: npm run build
+
+  docker:
+    name: Docker · build & smoke test
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build deployment image
+        run: docker build -t sentiment-analysis:ci .
+      - name: Smoke test the API
+        run: |
+          docker run -d -p 8000:8000 --name app sentiment-analysis:ci
           for i in $(seq 1 30); do
             curl -sf http://localhost:8000/health && break
             sleep 2
           done
-          # Vérifier qu'une prédiction fonctionne de bout en bout.
           curl -sf -X POST http://localhost:8000/predict \
             -H "Content-Type: application/json" \
             -d '{"text": "This movie was great!"}' | grep -q '"label"'
-          echo "✅ L'API répond et prédit correctement."
-
-      # 4. Construire l'image du frontend (vérifie le build React + nginx).
-      - name: Construire l'image frontend
-        run: docker build -t sentiment-frontend:ci ./frontend
+          echo "API is healthy and predicting."
