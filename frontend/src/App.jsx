@@ -3,7 +3,8 @@ import Contributions from './Contributions'
 import SessionHistogram from './SessionHistogram'
 import './App.css'
 
-const API_URL = 'http://127.0.0.1:8000/predict'
+// Relative URL: FastAPI serves this app in production; Vite proxies it in dev.
+const API_URL = '/predict'
 
 function App() {
   const [text, setText] = useState('')

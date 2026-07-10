@@ -1,0 +1,9 @@
+# Render Blueprint — deploys the single-container app (API + frontend).
+# On render.com: New → Blueprint → connect this repo. Render reads this file.
+services:
+  - type: web
+    name: sentiment-analysis
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
