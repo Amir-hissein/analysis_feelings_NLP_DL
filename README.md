@@ -5,6 +5,10 @@ data all the way to a containerized web application. The project compares three
 families of NLP models — a classical baseline, a recurrent neural network, and a
 pretrained Transformer — and ships the best one behind a REST API and a React UI.
 
+**▶ Live demo: [sentiment-analysis-mt92.onrender.com](https://sentiment-analysis-mt92.onrender.com)**
+*(free tier — the first request after a while may take ~30–60 s to wake up)*
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-online-brightgreen)](https://sentiment-analysis-mt92.onrender.com)
 ![CI](https://github.com/Amir-hissein/analysis_feelings_NLP_DL/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
