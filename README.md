@@ -11,6 +11,18 @@ pretrained Transformer — and ships the best one behind a REST API and a React 
 
 ---
 
+## Demo
+
+The app predicts a sentiment and explains **why** — showing which words drove the
+decision — plus a running session summary.
+
+| Prediction & word contributions | Negation handling |
+|:---:|:---:|
+| ![Demo](docs/demo.png) | ![Negation handling](docs/demo-negation.png) |
+| A positive review with per-word contributions and the session histogram. | `"not good"` is correctly read as **negative** via the `neg_good` feature. |
+
+---
+
 ##  Results
 
 All models are evaluated on the same held-out test set (9,917 reviews).
