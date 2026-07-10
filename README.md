@@ -1,4 +1,4 @@
-# 🎬 Sentiment Analysis — NLP & Deep Learning
+# Sentiment Analysis — NLP & Deep Learning
 
 End-to-end sentiment classifier for movie reviews (IMDB, 50k reviews), built from raw
 data all the way to a containerized web application. The project compares three
