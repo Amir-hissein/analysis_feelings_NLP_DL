@@ -21,7 +21,7 @@
 | 8 | Deep Learning (PyTorch) | ✅ Terminée |
 | 9 | Transformers (DistilBERT/BERT) | ✅ Terminée |
 | 10 | Sauvegarde du modèle / inférence | ✅ Terminée |
-| 11 | API FastAPI | ⬜ À venir |
+| 11 | API FastAPI | ✅ Terminée |
 | 12 | Frontend React | ⬜ À venir |
 | 13 | Déploiement (Docker/CI) | ⬜ À venir |
 | 14 | Améliorations | ⬜ À venir |
@@ -307,5 +307,27 @@ Accuracy TEST : **84,6 %** (baseline logistique : 88,6 %). Val acc encore en hau
 - **Réutilisabilité** : la logique vit dans `src/`, pas dans un notebook → l'API (Phase 11) l'importera telle quelle.
 
 **Livrable :** `src/inference/predict.py`. ✅
+
+---
+
+## ✅ Phase 11 — API web (FastAPI)
+
+**Objectif :** exposer le modèle via le web pour qu'une app cliente (frontend React) puisse l'utiliser.
+
+**Ce que j'ai fait :**
+- Ajouté `fastapi`, `uvicorn`, `pydantic` au `requirements.txt`.
+- Créé `src/api/main.py` : routes `GET /`, `GET /health`, `POST /predict`.
+- Schémas Pydantic `ReviewIn` / `PredictionOut` (validation + doc automatiques).
+- Testé le serveur avec `curl` (4 tests OK).
+
+**Ce que j'ai appris :**
+- **API REST** : un client envoie une requête HTTP (`POST /predict` + JSON), le serveur répond en JSON. Découple totalement le modèle de l'app cliente.
+- **FastAPI** : une fonction Python + un décorateur (`@app.post`) = un endpoint.
+- **Pydantic** : on déclare les types/contraintes (`Field(min_length=1)`) → validation AUTOMATIQUE. Un texte vide est rejeté avec un message clair, sans code de validation manuel.
+- **Docs interactives** générées seules sur `/docs` (Swagger).
+- **Séparation des responsabilités** : la logique métier reste dans `src/inference/predict.py` ; l'API ne fait que l'emballer en routes HTTP.
+- **Lancer le serveur** : `uvicorn src.api.main:app --reload`.
+
+**Livrable :** `src/api/main.py`. ✅
 
 ---

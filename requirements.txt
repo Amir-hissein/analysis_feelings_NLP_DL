@@ -37,3 +37,10 @@ torch==2.13.0
 # PHASE 9 : Transformers (DistilBERT pré-entraîné, Hugging Face)
 # ─────────────────────────────────────────────────────────
 transformers==4.46.3
+
+# ─────────────────────────────────────────────────────────
+# PHASE 11 : API web (FastAPI + serveur uvicorn + validation Pydantic)
+# ─────────────────────────────────────────────────────────
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
