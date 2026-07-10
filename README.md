@@ -11,7 +11,7 @@ pretrained Transformer — and ships the best one behind a REST API and a React 
 
 ---
 
-## 📊 Results
+##  Results
 
 All models are evaluated on the same held-out test set (9,917 reviews).
 
@@ -28,7 +28,7 @@ interpretable. The deployed model is the interpretable Logistic Regression.
 
 ---
 
-## ✨ Features
+## Features
 
 - **Interpretable predictions** — the API returns *which words* drove each decision.
 - **Negation-aware** — `"not good"` is correctly read as negative (`neg_good` feature).
@@ -38,7 +38,7 @@ interpretable. The deployed model is the interpretable Logistic Regression.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌──────────────────────┐      HTTP/JSON      ┌───────────────────────────┐
@@ -65,7 +65,7 @@ raw text → negation-aware preprocessing (spaCy) → TF-IDF → Logistic Regres
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -84,7 +84,7 @@ reports/              Evaluation figures & reports
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Option A — Docker (recommended)
 
@@ -114,7 +114,7 @@ already versioned in `models/`, so the API runs without retraining.
 
 ---
 
-## 🔌 API Reference
+## API Reference
 
 **`POST /predict`**
 
@@ -139,7 +139,7 @@ Health check: **`GET /health`**.
 
 ---
 
-## 🧪 Methodology & Notes
+##  Methodology & Notes
 
 - **No data leakage:** the TF-IDF vectorizer is fit on the training split only.
 - **Class balance:** the dataset is 50/50, so accuracy is a reliable metric (AUC ≈ 0.96).
@@ -151,6 +151,6 @@ Health check: **`GET /health`**.
 
 ---
 
-## 📜 License
+##  License
 
 MIT — see `LICENSE`.
