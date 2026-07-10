@@ -106,7 +106,7 @@ reports/              Evaluation figures & reports
 ```bash
 docker compose up --build
 ```
-Then open **http://localhost:8080**.
+
 
 ### Option B — Local development
 
@@ -115,7 +115,7 @@ Then open **http://localhost:8080**.
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
-uvicorn src.api.main:app --reload          # http://127.0.0.1:8000
+uvicorn src.api.main:app --reload          
 
 # 2. Frontend (second terminal)
 cd frontend && npm install && npm run dev   # http://localhost:5173
