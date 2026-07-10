@@ -24,7 +24,7 @@
 | 11 | API FastAPI | ✅ Terminée |
 | 12 | Frontend React | ✅ Terminée |
 | 13 | Déploiement (Docker) | ✅ Terminée |
-| 14 | Améliorations | ⬜ À venir |
+| 14 | Améliorations (négation) | ✅ Terminée |
 
 ---
 
@@ -397,6 +397,44 @@ Accuracy TEST : **84,6 %** (baseline logistique : 88,6 %). Val acc encore en hau
 
 **Livrables :** `Dockerfile.api`, `frontend/Dockerfile`, `docker-compose.yml`, `requirements-api.txt`, `.dockerignore`. ✅
 
+### Bonus Phase 13 — CI (GitHub Actions)
+- `.github/workflows/ci.yml` : à chaque push sur main → build image API + **smoke test** (lance l'API et teste une prédiction) + build image frontend.
+- Les 2 modèles baseline (222 Ko) sont versionnés (exception `.gitignore`) pour que la CI/Docker soit self-contained.
+- CI vérifiée : **verte** ✅.
+
 ---
+
+## ✅ Phase 14 — Amélioration : gestion de la négation
+
+**Objectif :** corriger le bug découvert en Phase 10 ("not good at all" → prédit positif) et mesurer si ça aide.
+
+**Ce que j'ai fait :**
+- Ajouté `preprocess_neg()` / `preprocess_neg_batch()` dans `nlp_preprocessing.py` : **marquage de négation** (préfixe `neg_` après une négation, jusqu'à la ponctuation ou un mot de contraste comme "but").
+- Script `notebooks/11_negation_retrain.py` : réentraîne TF-IDF + Régression Logistique sur le texte marqué, compare, sauvegarde.
+- Branché le modèle amélioré sur l'API (`predict.py` utilise `preprocess_neg` + les modèles `*_neg`).
+- Mis à jour `Dockerfile.api` + `.gitignore` pour embarquer le nouveau modèle. Testé dans le conteneur.
+
+**Résultats :**
+| Modèle | Accuracy | "not good at all" |
+|---|---|---|
+| Baseline | 88,6 % | positif ❌ |
+| **Avec négation** | **89,3 %** (+0,7) | **négatif** ✅ |
+
+**Ce que j'ai appris :**
+- **Marquage de négation** : technique NLP classique. "not good" → "neg_good" (un mot distinct que le modèle apprend). Bornes = ponctuation + mots de contraste ("but").
+- ⚠️ Il faut **RÉENTRAÎNER** : le modèle n'a aucun poids pour `neg_good` tant qu'il ne l'a pas vu à l'entraînement. Changer le prétraitement sans réentraîner ne sert à rien.
+- Gain réel mais modeste (+0,7 pt), et le **bug principal est corrigé**.
+- 🎓 **Limite honnête** : "not a bad film" (litote = positif) reste mal classé. Le marquage crée des mots, il ne "comprend" pas la double négation. C'est là que l'attention de BERT ferait mieux. Aucune méthode n'est magique.
+- Bonus : le mot `neg_good` apparaît dans le graphe des contributions → la négation est **visible** dans l'UI.
+
+**Livrables :** `models/tfidf_vectorizer_neg.joblib`, `models/logreg_model_neg.joblib`, `notebooks/11_negation_retrain.py`. ✅
+
+---
+
+## 🏁 PROJET TERMINÉ — 14 / 14 phases
+
+De l'exploration des données à une application web déployée en Docker avec CI :
+**EDA → nettoyage → NLP → TF-IDF → ML → évaluation → LSTM → BERT → inférence → API → React → Docker → CI → négation.**
+Modèle final : TF-IDF + Régression Logistique **avec gestion de la négation (89,3 %)**, interprétable et déployé.
 
 ---

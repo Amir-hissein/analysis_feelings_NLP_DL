@@ -21,6 +21,8 @@ models/*
 # car nécessaires au déploiement Docker + à la CI (image API self-contained).
 !models/tfidf_vectorizer.joblib
 !models/logreg_model.joblib
+!models/tfidf_vectorizer_neg.joblib
+!models/logreg_model_neg.joblib
 
 # Système
 .DS_Store
